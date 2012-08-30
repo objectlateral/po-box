@@ -12,18 +12,41 @@ describe "PoBox" do
     PoBox
   end
 
-  def params
-    {name: "Joe Blow", email: "joe@blow.com", message: "oh hai!"}
+  context "Failure" do
+    it "handles mail posted sans required params" do
+      post "/mail"
+      last_response.should be_unprocessable
+    end
   end
 
-  it "handles mail posted sans required params" do
-    post "/mail"
-    last_response.should be_unprocessable
-  end
+  context "Success" do
+    before do
+      @params = {name: "Joe Blow", email: "joe@blow.com", message: "oh hai!"}
+      @referer = "http://test.com/ohai"
+      Pony.should_receive(:mail)
+    end
 
-  it "handles mail posted with required params" do
-    Pony.should_receive(:mail)
-    post "/mail", params
-    last_response.should be_ok
+    it "handles mail posted with required params" do
+      post "/mail", @params
+      last_response.should be_redirect
+    end
+
+    it "responds with 'ok' to ajax requests" do
+      post "/mail", @params, {"HTTP_X_REQUESTED_WITH" => "XMLHttpRequest"}
+      last_response.should be_ok
+    end
+
+    it "redirects mail to referer when set" do
+      post "/mail", @params, {"HTTP_REFERER" => @referer}
+      last_response.should be_redirect
+      last_response.headers["Location"].should == @referer
+    end
+
+    it "redirects to 'redirect' param when set" do
+      url = "http://redirect.com/path"
+      post "/mail", @params.merge(redirect: url), {"HTTP_REFERER" => @referer}
+      last_response.should be_redirect
+      last_response.headers["Location"].should == url
+    end
   end
 end

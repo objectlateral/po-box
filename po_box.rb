@@ -5,6 +5,13 @@ require "rack/cors"
 require "pony"
 
 class PoBox < Sinatra::Base
+  use Rack::Cors do
+    allow do
+      origins "*"
+      resource "/mail", headers: :any, methods: [:post, :options]
+    end
+  end
+
   configure :production do
     Pony.options = {
       via: :smtp,
@@ -49,6 +56,10 @@ class PoBox < Sinatra::Base
       body: body
     })
 
-    200
+    if request.xhr?
+      200
+    else
+      redirect params[:redirect] || request.referer
+    end
   end
 end
