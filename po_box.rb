@@ -7,7 +7,7 @@ require "pony"
 class PoBox < Sinatra::Base
   use Rack::Cors do
     allow do
-      origins "*"
+      origins "http://objectlateral.com", "http://objectlateral.github.com", /http:\/\/localhost*/
       resource "/mail", headers: :any, methods: [:post, :options]
     end
   end
