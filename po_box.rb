@@ -52,6 +52,7 @@ class PoBox < Sinatra::Base
     Pony.mail({
       to: "info@objectlateral.com",
       from: "po-box@objectlateral.com",
+      reply_to: params[:email],
       subject: "You've Got Mail!",
       body: body
     })
