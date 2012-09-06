@@ -46,8 +46,10 @@ class PoBox < Sinatra::Base
       nope "#{param} required" unless params[param]
     end
 
-    ip = env["REMOTE_ADDR"].split(",").first
-    body = "#{params[:name]}, #{params[:email]}, #{ip}\n\n#{params[:message]}"
+    meta = [
+      params[:name], params[:email], params[:stack], params[:ip]
+    ].compact.join(", ")
+    body = "#{meta}\n\n#{params[:message]}"
 
     Pony.mail({
       to: "info@objectlateral.com",
