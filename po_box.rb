@@ -46,7 +46,7 @@ class PoBox < Sinatra::Base
       nope "#{param} required" unless params[param]
     end
 
-    ip = env["HTTP_X_REAL_IP"] || env["REMOTE_ADDR"]
+    ip = env["REMOTE_ADDR"].split(",").first
     body = "#{params[:name]}, #{params[:email]}, #{ip}\n\n#{params[:message]}"
 
     Pony.mail({
