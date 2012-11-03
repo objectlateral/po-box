@@ -46,6 +46,10 @@ class PoBox < Sinatra::Base
       nope "#{param} required" unless params[param]
     end
 
+    unless params[:token] and params[:token] == "8675309"
+      nope "try again later!"
+    end
+
     meta = [
       params[:name], params[:email], params[:stack], params[:ip]
     ].compact.join(", ")

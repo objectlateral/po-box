@@ -13,7 +13,7 @@ describe "PoBox" do
   end
 
   context "Failure" do
-    it "handles mail posted sans required params" do
+    it "rejects mail posted sans required params" do
       post "/mail"
       last_response.should be_unprocessable
     end
@@ -21,7 +21,12 @@ describe "PoBox" do
 
   context "Success" do
     before do
-      @params = {name: "Joe Blow", email: "joe@blow.com", message: "oh hai!"}
+      @params = {
+        name: "Joe Blow",
+        email: "joe@blow.com",
+        message: "oh hai!",
+        token: "8675309"
+      }
       @referer = "http://test.com/ohai"
       Pony.should_receive(:mail)
     end
